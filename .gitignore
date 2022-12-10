@@ -1,0 +1,10 @@
+# ignore my vids
+./Videos
+
+# ignore webdriver
+/*.exe
+
+# ignore pycache
+
+
+
