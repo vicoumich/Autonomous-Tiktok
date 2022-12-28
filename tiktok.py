@@ -119,7 +119,7 @@ class TikTokControler:
         # sleep(3)
         # Connect with google account
         # google_button = self.driver.find_element(By.XPATH, '/html/body/div[2]/div/div[2]/div/div/div[4]')
-        google_button = self.test_element('/html/body/div[2]/div/div[2]/div/div/div[4]', find_line())
+        google_button = self.test_element('/html/body/div[2]/div/div[2]/div/div/div[3]', find_line())
         google_button.click()
 
         sleep(3)
@@ -142,8 +142,14 @@ class TikTokControler:
         self.in_home = True
         print("\n Connected. \n")
   
-    def follow_mass(n:int):
-        pass
+    def follow_mass(self, n:int):
+        sleep(3)
+        self.driver.get("https://www.tiktok.com/fr")
+        sleep(3)
+        
+        comments_button = self.test_element('//*[@id="app"]/div[2]/div[2]/div[1]/div[1]/div/div[2]/div[2]/button[2]')
+        comments_button.click()
+        #finir
 
 
 
