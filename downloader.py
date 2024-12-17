@@ -14,7 +14,7 @@ def get_video(link, index):
     try:
         yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution')[-1].download(path) 
     except:
-        raise Exception("Cant downlaod the video")
+        raise Exception("Can t download the video")
     
     print(f"Video in {path}.\n")
 
@@ -22,5 +22,5 @@ def get_video(link, index):
     return index
 
 if __name__ == '__main__':
-    test = "https://www.youtube.com/watch?v=I5rlZRlZVSY"
+    test = "https://youtu.be/"
     get_video(test, 0)

@@ -65,6 +65,6 @@ def clean_parts(videoindex):
             
     
 if __name__ == "__main__":
-    video_cutter(0, 0, 120, 4)
+    video_cutter(5, 72, 540, 6)
     input("--- Press Enter To delete test ---")
     clean_parts(0)

@@ -1,7 +1,8 @@
 from distutils.command.upload import upload
 from lib2to3.pgen2.driver import Driver
 from platform import platform
-from selenium import webdriver
+# from selenium import webdriver
+import undetected_chromedriver as uc
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -11,6 +12,10 @@ from selenium_stealth import stealth
 import base64
 from time import sleep
 import inspect
+from config import (
+    PASSWORD,
+    USERNAME
+)
 
 URL  = "https://www.tiktok.com/login"
 URL_POST = "https://www.tiktok.com/upload?lang=fr"
@@ -43,7 +48,8 @@ class TikTokControler:
         options.add_argument("--profile-directory=Default")
         options.add_argument("--user-data-dir=C:/Users/Admin/AppData/Local/Google/Chrome/User Data")
 
-        self.driver = webdriver.Chrome(PATH)
+        self.driver = uc.Chrome()
+
         # Stealth
         stealth(self.driver,
                 languages = ["fr-FR", "fr"],
@@ -75,14 +81,14 @@ class TikTokControler:
         sleep(5)
         self.driver.get(URL_POST)
 
-        sleep(3)
+        sleep(5)
         self.driver.switch_to.frame(0)
 
         publish_button = self.test_element('//*[@id="root"]/div/div/div/div/div[2]/div[2]/div[8]/div[2]/button', find_line())
 
         upload_button = self.test_element('/html/body/div[1]/div/div/div/div/div[2]/div[1]/div/input', find_line())
         sleep(1)
-        upload_button.send_keys(f"C:\\Users\\vicou\\Desktop\\code\\code\\TikTok\\Videos\\Vid{index}\\Part_{index_part}_{STR_TAGS}.mp4")
+        upload_button.send_keys(f"C:\\Users\\vicou\\Desktop\\code\\POSTED\\Autonomous_Tiktok\\Videos\\Vid{index}\\Part_{index_part}_{STR_TAGS}.mp4")
 
         while publish_button.get_property('disabled'):
             sleep(1)
@@ -128,11 +134,11 @@ class TikTokControler:
 
         email = self.test_element("/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input", find_line())
         sleep(1)
-        email.send_keys("chainegranono@gmail.com")
+        email.send_keys(USERNAME)
         email.send_keys(Keys.ENTER)
 
         password = self.test_element("/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input", find_line())
-        str_password = str(base64.b64decode("VmljdG9yUHl0aGFnb3JlMTgwNA==") + b"$" + base64.b64decode("Qm9iUm9zc1RoZUJvc3M="))[2:-1]
+        str_password = PASSWORD
         sleep(1)
         password.send_keys(str_password)
         password.send_keys(Keys.ENTER)
@@ -156,12 +162,12 @@ class TikTokControler:
 if __name__ =="__main__":
     test = TikTokControler()
     test.connect()
-    # test.post(2,0)
-
-    # for i in range(4):
-    #     print(3-i)
-    #     sleep(1.11)
-    # for x in range(1, 5):
-    #     sleep(1)
-    #     test.post(x, 0)
-    
+    # test.post(1,0)
+    sleep(3)
+    for i in range(4):
+        print(3-i)
+        sleep(1.11)
+    for x in range(3, 6):
+        sleep(3)
+        test.post(x, 5)
+        print(f"Video {x} SUCCESSFULLY POSTED\n")
