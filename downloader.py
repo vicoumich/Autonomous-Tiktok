@@ -1,10 +1,7 @@
-from webbrowser import get
-from pytube import YouTube
 import os
+import yt_dlp
 
 def get_video(link, index):
-    yt = YouTube(link)
-    print("Downloading...\n")
     path = f"./Videos/Vid{index}"
     
     while os.path.isdir(path) :
@@ -12,9 +9,16 @@ def get_video(link, index):
         path = f"./Videos/Vid{index}"
     os.mkdir(path)
     try:
-        yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution')[-1].download(path) 
-    except:
-        raise Exception("Can t download the video")
+        print("Downloading...\n")
+        ydl_opts = {
+            'paths':{
+                'home': path
+                }
+            }
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([link])
+    except Exception as e:
+        raise e
     
     print(f"Video in {path}.\n")
 
@@ -22,5 +26,5 @@ def get_video(link, index):
     return index
 
 if __name__ == '__main__':
-    test = "https://youtu.be/"
-    get_video(test, 0)
+    test = "https://youtube.com/shorts/OBleS4q3JGY"
+    get_video(test, 1)
