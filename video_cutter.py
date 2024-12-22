@@ -1,4 +1,4 @@
-from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip
+from moviepy import VideoFileClip, TextClip, CompositeVideoClip
 import os
 from threading import Thread
 
@@ -8,11 +8,11 @@ HASHTAGS = ["#tiktok", "#foryou", "#foryoupage", "#fyp", "#viral", "#tiktokindia
 STR_TAGS = ' '.join(HASHTAGS)
 
 def make_part_thread(source, targ, start, end, index):
-    part = VideoFileClip(source).subclip(start, end)
-    text = TextClip(f"Part{index}", 
-                     fontsize=60, color="black",
+    part = VideoFileClip(source).subclipped(start, end)
+    text = TextClip(text = f"Part{index}", 
+                     font_size=60, color="black",
                      bg_color="white", 
-                     font="Arial").set_position(("center", "center")).set_duration(4)
+                     font="Arial.ttf").with_duration(4).with_position("center")
                      
     part = CompositeVideoClip([part, text])
     text.close()
@@ -65,6 +65,6 @@ def clean_parts(videoindex):
             
     
 if __name__ == "__main__":
-    video_cutter(5, 72, 540, 6)
+    video_cutter(8, 1, 58, 4)
     input("--- Press Enter To delete test ---")
-    clean_parts(0)
+    clean_parts(8)
