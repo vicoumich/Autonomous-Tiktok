@@ -1,7 +1,7 @@
 import os
 import yt_dlp
 
-def get_video(link, index):
+def get_video(link: str, index: int) -> int:
     path = f"./Videos/Vid{index}"
     
     while os.path.isdir(path) :
@@ -12,15 +12,16 @@ def get_video(link, index):
         print("Downloading...\n")
         ydl_opts = {
             'paths':{
-                'home': path
-                }
-            }
+                'home': path,
+            },
+            'outtmpl': 'test.%(ext)s'
+        }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([link])
     except Exception as e:
         raise e
     
-    print(f"Video in {path}.\n")
+    print(f"Video in {path} .\n")
 
     # Return the index cause it can be modified
     return index

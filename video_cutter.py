@@ -20,7 +20,7 @@ def make_part_thread(source, targ, start, end, index):
     part.close()
 
 
-def video_cutter(videoindex, start, end, nbpart):
+def video_cutter(videoindex: int, start: int|float, end: int|float, nbpart: int):
     if end <= start:
         raise Exception("End time must be more than start")
     threads = []
@@ -65,6 +65,6 @@ def clean_parts(videoindex):
             
     
 if __name__ == "__main__":
-    video_cutter(8, 1, 58, 4)
+    video_cutter(1, 1, 58, 4)
     input("--- Press Enter To delete test ---")
-    clean_parts(8)
+    clean_parts(1)
