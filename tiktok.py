@@ -9,12 +9,13 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium_stealth import stealth
-import base64
+import pickle
 from time import sleep
 import inspect
 from config import (
     PASSWORD,
-    USERNAME
+    USERNAME,
+    COOKIES
 )
 
 URL  = "https://www.tiktok.com/login"
@@ -76,6 +77,17 @@ class TikTokControler:
             count += 1
         raise Exception(f"\nImpossible to find the element in line {nbline}.\n")
 
+    def _save_cookie(self):
+        with open(COOKIES, 'wb') as filehandler:
+            pickle.dump(self.driver.get_cookies(), filehandler)
+
+    def _load_cookie(self):
+        with open(COOKIES, 'rb') as cookiesfile:
+            cookies = pickle.load(cookiesfile)
+            for cookie in cookies:
+                self.driver.add_cookie(cookie)
+
+
     def post(self, index_part:int, index:int):
         # self.driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div/div[2]/div[1]').click()
         sleep(5)
@@ -109,7 +121,7 @@ class TikTokControler:
     def connect(self):
         if self.connected :
             print("\n Already connected. \n")
-         
+            return
         # wait = WebDriverWait(self.driver, 15)
         # wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/tiktok-cookie-banner//div/div[2]/button[1]"]')))
         # # Accept cookies
@@ -125,19 +137,19 @@ class TikTokControler:
         # sleep(3)
         # Connect with google account
         # google_button = self.driver.find_element(By.XPATH, '/html/body/div[2]/div/div[2]/div/div/div[4]')
-        google_button = self.test_element('/html/body/div[2]/div/div[2]/div/div/div[3]', find_line())
+        google_button = self.test_element('/html/body/div[1]/div/div[2]/div/div/div/div[5]/div[2]', find_line())
         google_button.click()
 
         sleep(3)
         root = self.driver.window_handles[0]
         self.driver.switch_to.window(self.driver.window_handles[1])
 
-        email = self.test_element("/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input", find_line())
+        email = self.test_element("/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[2]/div/div/div[1]/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input", find_line())
         sleep(1)
         email.send_keys(USERNAME)
         email.send_keys(Keys.ENTER)
 
-        password = self.test_element("/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input", find_line())
+        password = self.test_element("/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[2]/div/div/div[1]/form/span/section[2]/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input", find_line())
         str_password = PASSWORD
         sleep(1)
         password.send_keys(str_password)
