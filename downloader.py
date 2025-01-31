@@ -15,7 +15,7 @@ def get_video(link: str, index: int) -> int:
                 'home': path,
             },
             'outtmpl': 'test.%(ext)s'
-        }
+        } 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([link])
     except Exception as e:
