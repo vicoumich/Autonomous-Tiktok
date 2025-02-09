@@ -13,6 +13,7 @@ import random
 import pickle
 from time import sleep
 import inspect
+import os
 from config import (
     PASSWORD,
     USERNAME,
@@ -36,21 +37,10 @@ class TikTokControler:
         self.in_home = False
         self.in_upload = False
         options = Options()
-        options.add_argument("start-maximized")
-
-        # Chrome is controlled by automated test software
-        options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        options.add_experimental_option('useAutomationExtension', False)
-        options.add_argument("--mute-audio")
-
-        # Avoiding detection
-        options.add_argument('--disable-blink-features=AutomationControlled')
-
-        # Default User Profile
-        options.add_argument("--profile-directory=Default")
-        options.add_argument("--user-data-dir=C:/Users/Admin/AppData/Local/Google/Chrome/User Data")
-
-        self.driver = uc.Chrome()
+        options.page_load_strategy = "normal"
+        # Keep windows open
+        # options.add_experimental_option("detach", True)
+        self.driver = uc.Chrome(options=options)
 
         # Stealth
         stealth(self.driver,
@@ -76,10 +66,12 @@ class TikTokControler:
             except:
                 pass
             count += 1
-        raise Exception(f"\nImpossible to find the element in line {nbline}.\n")
+        # raise Exception(f"\nImpossible to find the element in line {nbline}.\n")
+        print(f"\nImpossible to find the element in line {nbline}.\n")
+        sleep(100000)
 
     def wait_random(self):
-        sleep(random.uniform(1,4))
+        sleep(random.uniform(3,6))
 
     def _save_cookie(self):
         with open(COOKIES, 'wb') as filehandler:
@@ -98,17 +90,21 @@ class TikTokControler:
         self.driver.get(URL_POST)
 
         self.wait_random()
-        self.driver.switch_to.frame(0)
+        # self.driver.switch_to.frame(0)
 
-        publish_button = self.test_element('//*[@id="root"]/div/div/div/div/div[2]/div[2]/div[8]/div[2]/button', find_line())
+        upload_button = self.test_element('//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[1]/div/div/input', find_line())
 
-        upload_button = self.test_element('/html/body/div[1]/div/div/div/div/div[2]/div[1]/div/input', find_line())
+        # publish_button = self.test_element('//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[4]/div/button[1]', find_line())
         self.wait_random()
-        upload_button.send_keys(f"C:\\Users\\vicou\\Desktop\\code\\POSTED\\Autonomous_Tiktok\\Videos\\Vid{index}\\Part_{index_part}_{STR_TAGS}.mp4")
-
+        print("upload button : \n",upload_button)
+        abspath = os.path.abspath(f"./Videos/Vid{index}/Part_{index_part}_{STR_TAGS}.mp4")
+        upload_button.send_keys(abspath)
+        print(f"\nkey sended, path : {abspath}\n")
+        sleep(10)
+        publish_button = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[4]/div/button[1]')
         while publish_button.get_property('disabled'):
-            self.wait_random()
-            publish_button = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/div[2]/div[2]/div[8]/div[2]/button')
+            sleep(0.5)
+            publish_button = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[4]/div/button[1]')
         try:
             self.wait_random()
             # Click the button to denie cut video
@@ -120,7 +116,7 @@ class TikTokControler:
         # title = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/div[2]/div[2]/div[2]/div/div[2]/div/div/div[1]/input')
         
         # Ultimate
-        self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div/div/div[2]/div[2]/div[8]/div[2]/button').click()
+        publish_button.click()
     
     def login_with_cookies(self):
         if self.connected:
@@ -168,8 +164,7 @@ class TikTokControler:
         self.wait_random()
         root = self.driver.window_handles[0]
         self.driver.switch_to.window(self.driver.window_handles[1])
-
-        email = self.test_element("/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[2]/div/div/div[1]/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input", find_line())
+        email = self.test_element('//*[@id="identifierId"]', find_line())
         self.wait_random()
         email.send_keys(USERNAME)
         email.send_keys(Keys.ENTER)
@@ -186,7 +181,7 @@ class TikTokControler:
         self.driver.switch_to.window(self.driver.window_handles[0])
         self.connected = True
         self.in_home = True
-        print(self._save_cookie())
+        # print(self._save_cookie())
         print("\n Connected. \n")
   
     def follow_mass(self, n:int):
@@ -203,8 +198,10 @@ class TikTokControler:
 if __name__ =="__main__":
     test = TikTokControler()
     test.connect()
+    test.post(3, 1)
+    input("press enter to close")
     # test.post(1,0)
-    sleep(100000)
+    
     # for i in range(4):
     #     print(3-i)
     #     sleep(1.11)
