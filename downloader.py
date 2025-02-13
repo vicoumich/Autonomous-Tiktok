@@ -1,7 +1,7 @@
 import os
 import yt_dlp
 
-def get_video(link: str, index: int) -> int:
+def get_video(link: str, index=0) -> int:
     path = f"./Videos/Vid{index}"
     
     while os.path.isdir(path) :
@@ -27,5 +27,5 @@ def get_video(link: str, index: int) -> int:
     return index
 
 if __name__ == '__main__':
-    test = "https://youtube.com/shorts/OBleS4q3JGY"
+    test = "https://youtu.be/QNOtkdX7odI"
     get_video(test, 1)

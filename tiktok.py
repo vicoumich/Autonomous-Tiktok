@@ -23,8 +23,8 @@ from config import (
 URL  = "https://www.tiktok.com/login"
 URL_POST = "https://www.tiktok.com/upload?lang=fr"
 PATH = "C:\\Users\\vicou\Desktop\\code\\code\\TikTok\\chromedriver.exe"
-HASHTAGS = ["#tiktok", "#foryou", "#foryoupage", "#fyp", "#viral", "#tiktokindia", 
-            "#trending", "#tiktokfrance", "#comedy", "#funny"]
+HASHTAGS = ["#tiktok", "#foryou", "#foryoupage", "#fyp", "#viral", "#humour", 
+            "#trending", "#tiktokfrance", "#drole", "#funny"]
 STR_TAGS = ' '.join(HASHTAGS)
 
 def find_line():
@@ -84,6 +84,14 @@ class TikTokControler:
             for cookie in cookies:
                 self.driver.add_cookie(cookie)
 
+    def _add_description(self, description=STR_TAGS):
+        self.wait_random()
+        self.driver.execute_script(
+            f"document.querySelector('#root > div > div > div.css-fsbw52.ep9i2zp0 > div.css-86gjln.edss2sz5 > div > div > div > div.jsx-1810272162.container > div.jsx-1810272162.main > div:nth-child(2) > div.jsx-1601248207.caption-container.caption-markup-container > div.jsx-1601248207.caption-markup > div.jsx-1601248207.caption-editor > div > div > div > div > div > div > span > span').innerHTML = '{description}';"
+            )
+        self.wait_random()
+        
+
     def post(self, index_part:int, index:int):
         # self.driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div/div[2]/div[1]').click()
         self.wait_random()
@@ -97,11 +105,20 @@ class TikTokControler:
         # publish_button = self.test_element('//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[4]/div/button[1]', find_line())
         self.wait_random()
         print("upload button : \n",upload_button)
-        abspath = os.path.abspath(f"./Videos/Vid{index}/Part_{index_part}_{STR_TAGS}.mp4")
+        
+        ##### TEMP CODE ######
+        if index_part != -1:
+            #### Initial Code ####
+            abspath = os.path.abspath(f"./Videos/Vid{index}/Part_{index_part}_{STR_TAGS}.mp4") 
+            ######################
+        else:
+            abspath = os.path.abspath(f"./Videos/Vid{index}/test.mp4")
+        ######
         upload_button.send_keys(abspath)
         print(f"\nkey sended, path : {abspath}\n")
         sleep(10)
         publish_button = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[4]/div/button[1]')
+        self._add_description()
         while publish_button.get_property('disabled'):
             sleep(0.5)
             publish_button = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[4]/div/button[1]')
@@ -198,7 +215,9 @@ class TikTokControler:
 if __name__ =="__main__":
     test = TikTokControler()
     test.connect()
-    test.post(3, 1)
+    for i in range(5,33):
+        test.post(-1, i)
+        sleep(random.uniform(24000, 30000))
     input("press enter to close")
     # test.post(1,0)
     
