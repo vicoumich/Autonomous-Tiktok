@@ -86,9 +86,13 @@ class TikTokControler:
 
     def _add_description(self, description=STR_TAGS):
         self.wait_random()
-        self.driver.execute_script(
-            f"document.querySelector('#root > div > div > div.css-fsbw52.ep9i2zp0 > div.css-86gjln.edss2sz5 > div > div > div > div.jsx-1810272162.container > div.jsx-1810272162.main > div:nth-child(2) > div.jsx-1601248207.caption-container.caption-markup-container > div.jsx-1601248207.caption-markup > div.jsx-1601248207.caption-editor > div > div > div > div > div > div > span > span').innerHTML = '{description}';"
-            )
+        # self.driver.execute_script(
+        #     f"document.querySelector('#root > div > div > div.css-fsbw52.ep9i2zp0 > div.css-86gjln.edss2sz5 > div > div > div > div.jsx-1810272162.container > div.jsx-1810272162.main > div:nth-child(2) > div.jsx-1601248207.caption-container.caption-markup-container > div.jsx-1601248207.caption-markup > div.jsx-1601248207.caption-editor > div > div > div > div > div > div > span > span').innerHTML = '{description}';"
+        #     )
+        caption_field = self.driver.find_element(By.CSS_SELECTOR, "div[contenteditable='true']")
+        caption_field.clear()  # Efface le contenu existant
+        caption_field.send_keys(description)  # Saisie simulée
+
         self.wait_random()
         
 
@@ -217,7 +221,7 @@ if __name__ =="__main__":
     test.connect()
     for i in range(5,33):
         test.post(-1, i)
-        sleep(random.uniform(24000, 30000))
+        sleep(random.uniform(2400, 3000))
     input("press enter to close")
     # test.post(1,0)
     
