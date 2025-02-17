@@ -1,7 +1,3 @@
-# from distutils.command.upload import upload
-# from lib2to3.pgen2.driver import Driver
-# from platform import platform
-# from selenium import webdriver
 import undetected_chromedriver as uc
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -19,6 +15,7 @@ from config import (
     USERNAME,
     COOKIES
 )
+from dom_ids import Dom_ids
 
 URL  = "https://www.tiktok.com/login"
 URL_POST = "https://www.tiktok.com/upload?lang=fr"
@@ -89,12 +86,11 @@ class TikTokControler:
         # self.driver.execute_script(
         #     f"document.querySelector('#root > div > div > div.css-fsbw52.ep9i2zp0 > div.css-86gjln.edss2sz5 > div > div > div > div.jsx-1810272162.container > div.jsx-1810272162.main > div:nth-child(2) > div.jsx-1601248207.caption-container.caption-markup-container > div.jsx-1601248207.caption-markup > div.jsx-1601248207.caption-editor > div > div > div > div > div > div > span > span').innerHTML = '{description}';"
         #     )
-        caption_field = self.driver.find_element(By.CSS_SELECTOR, "div[contenteditable='true']")
-        caption_field.clear()  # Efface le contenu existant
-        caption_field.send_keys(description)  # Saisie simulée
+        caption_field = self.driver.find_element(By.CSS_SELECTOR, Dom_ids.tiktok_description_input)
+        caption_field.clear()
+        caption_field.send_keys(description)
 
         self.wait_random()
-        
 
     def post(self, index_part:int, index:int):
         # self.driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div/div[2]/div[1]').click()
@@ -102,9 +98,10 @@ class TikTokControler:
         self.driver.get(URL_POST)
 
         self.wait_random()
+        self.wait_random()
         # self.driver.switch_to.frame(0)
 
-        upload_button = self.test_element('//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[1]/div/div/input', find_line())
+        upload_button = self.test_element(Dom_ids.tiktok_upload_button, find_line())
 
         # publish_button = self.test_element('//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[4]/div/button[1]', find_line())
         self.wait_random()
@@ -121,11 +118,11 @@ class TikTokControler:
         upload_button.send_keys(abspath)
         print(f"\nkey sended, path : {abspath}\n")
         sleep(10)
-        publish_button = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[4]/div/button[1]')
+        publish_button = self.driver.find_element(By.XPATH, Dom_ids.tiktok_publish_button)
         self._add_description()
         while publish_button.get_property('disabled'):
             sleep(0.5)
-            publish_button = self.driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[4]/div/button[1]')
+            publish_button = self.driver.find_element(By.XPATH, Dom_ids.tiktok_publish_button)
         try:
             self.wait_random()
             # Click the button to denie cut video
@@ -174,29 +171,31 @@ class TikTokControler:
         
         self.wait_random()
         # Get out the cookie Shadow DOM
-        self.driver.execute_script('''return document.querySelector("body > tiktok-cookie-banner").shadowRoot.querySelector("div > div.button-wrapper > button:nth-child(2)")''').click()
+        self.driver.execute_script(Dom_ids.accept_cookies_button).click()
 
         # sleep(3)
         # Connect with google account
         # google_button = self.driver.find_element(By.XPATH, '/html/body/div[2]/div/div[2]/div/div/div[4]')
-        google_button = self.test_element('/html/body/div[1]/div/div[2]/div/div/div/div[5]/div[2]', find_line())
+        google_button = self.test_element(Dom_ids.google_login_button, find_line())
         google_button.click()
 
+        # Email input filling
         self.wait_random()
         root = self.driver.window_handles[0]
         self.driver.switch_to.window(self.driver.window_handles[1])
-        email = self.test_element('//*[@id="identifierId"]', find_line())
+        email = self.test_element(Dom_ids.google_email_input, find_line())
         self.wait_random()
         email.send_keys(USERNAME)
         email.send_keys(Keys.ENTER)
 
-        password = self.test_element("/html/body/div[1]/div[1]/div[2]/c-wiz/div/div[2]/div/div/div[1]/form/span/section[2]/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input", find_line())
+        # Password input filling
+        password = self.test_element(Dom_ids.google_password_input, find_line())
         str_password = PASSWORD
         self.wait_random()
         password.send_keys(str_password)
         password.send_keys(Keys.ENTER)
         self.wait_random()
-        google_accept = self.test_element('//*[@id="yDmH0d"]/c-wiz/div/div[3]/div/div/div[2]/div/div/button', find_line())
+        google_accept = self.test_element(Dom_ids.google_accept_button, find_line())
         google_accept.click()
 
         self.driver.switch_to.window(self.driver.window_handles[0])
@@ -205,7 +204,7 @@ class TikTokControler:
         # print(self._save_cookie())
         print("\n Connected. \n")
   
-    def follow_mass(self, n:int):
+    def follow(self, username: str):
         sleep(3)
         self.driver.get("https://www.tiktok.com/fr")
         sleep(3)
@@ -219,7 +218,7 @@ class TikTokControler:
 if __name__ =="__main__":
     test = TikTokControler()
     test.connect()
-    for i in range(5,33):
+    for i in range(11,33):
         test.post(-1, i)
         sleep(random.uniform(2400, 3000))
     input("press enter to close")
