@@ -2,11 +2,11 @@ import os
 import yt_dlp
 
 def get_video(link: str, index=0) -> int:
-    path = f"./Videos/Vid{index}"
+    path = f"../Videos/Vid{index}"
     
     while os.path.isdir(path) :
         index += 1
-        path = f"./Videos/Vid{index}"
+        path = f"../Videos/Vid{index}"
     os.mkdir(path)
     try:
         print("Downloading...\n")

@@ -12,7 +12,7 @@ def make_part_thread(source, targ, start, end, index):
     text = TextClip(text = f"Part{index}", 
                      font_size=60, color="black",
                      bg_color="white", 
-                     font="Arial.ttf").with_duration(4).with_position("center")
+                     font="./font/Arial.ttf").with_duration(4).with_position("center")
                      
     part = CompositeVideoClip([part, text])
     text.close()
@@ -30,9 +30,9 @@ def video_cutter(videoindex: int, start: int|float, end: int|float, nbpart: int)
     part_time = (end - start) // nbpart
     start2 = start
     end2 = start2 + part_time
-    source = f"Videos/Vid{videoindex}/test.mp4"
+    source = f"../Videos/Vid{videoindex}/test.mp4"
 
-    targ = f"Videos/Vid{videoindex}/Part_{index_part}_{STR_TAGS}.mp4"
+    targ = f"../Videos/Vid{videoindex}/Part_{index_part}.mp4"
 
     # If the video is already cut
     if os.path.isfile(targ):
@@ -63,7 +63,7 @@ def clean_parts(videoindex):
     while os.path.isfile(targ):
         os.remove(targ)
         index += 1
-        targ = f"Videos/Vid{videoindex}/Part{index}.mp4"
+        targ = f"../Videos/Vid{videoindex}/Part{index}.mp4"
             
     
 if __name__ == "__main__":

@@ -93,7 +93,6 @@ class TikTokControler:
         self.wait_random()
 
     def post(self, index_part:int, index:int):
-        # self.driver.find_element(By.XPATH, '//*[@id="app"]/div[1]/div/div[2]/div[1]').click()
         self.wait_random()
         self.driver.get(URL_POST)
 
@@ -103,23 +102,23 @@ class TikTokControler:
 
         upload_button = self.test_element(Dom_ids.tiktok_upload_button, find_line())
 
-        # publish_button = self.test_element('//*[@id="root"]/div/div/div[2]/div[2]/div/div/div/div[4]/div/button[1]', find_line())
         self.wait_random()
         print("upload button : \n",upload_button)
         
         ##### TEMP CODE ######
         if index_part != -1:
             #### Initial Code ####
-            abspath = os.path.abspath(f"./Videos/Vid{index}/Part_{index_part}_{STR_TAGS}.mp4") 
+            abspath = os.path.abspath(f"../Videos/Vid{index}/Part_{index_part}.mp4") 
             ######################
         else:
-            abspath = os.path.abspath(f"./Videos/Vid{index}/test.mp4")
+            abspath = os.path.abspath(f"../Videos/Vid{index}/test.mp4")
         ######
         upload_button.send_keys(abspath)
         print(f"\nkey sended, path : {abspath}\n")
         sleep(10)
         publish_button = self.driver.find_element(By.XPATH, Dom_ids.tiktok_publish_button)
         self._add_description()
+
         while publish_button.get_property('disabled'):
             sleep(0.5)
             publish_button = self.driver.find_element(By.XPATH, Dom_ids.tiktok_publish_button)
