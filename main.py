@@ -1,6 +1,6 @@
-from video_cutter import video_cutter, clean_parts
-from tiktok import TikTokControler
-from downloader import get_video
+from content.video_cutter import video_cutter, clean_parts
+from tiktok.tiktok import TikTokControler
+from content.downloader import get_video
 from art import tprint
 
 def main():

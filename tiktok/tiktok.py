@@ -10,12 +10,12 @@ import pickle
 from time import sleep
 import inspect
 import os
-from config import (
+from tiktok.config import (
     PASSWORD,
     USERNAME,
     COOKIES
 )
-from dom_ids import Dom_ids
+from tiktok.dom_ids import Dom_ids
 
 URL  = "https://www.tiktok.com/login"
 URL_POST = "https://www.tiktok.com/upload?lang=fr"
@@ -67,8 +67,8 @@ class TikTokControler:
         print(f"\nImpossible to find the element in line {nbline}.\n")
         sleep(100000)
 
-    def wait_random(self):
-        sleep(random.uniform(3,6))
+    def wait_random(self, a=3, b=6):
+        sleep(random.uniform(a,b))
 
     def _save_cookie(self):
         with open(COOKIES, 'wb') as filehandler:
@@ -205,22 +205,44 @@ class TikTokControler:
         print("\n Connected. \n")
   
     def follow(self, username: str):
-        sleep(3)
-        self.driver.get("https://www.tiktok.com/fr")
-        sleep(3)
+        follow_strings = ["Suivre", "Follow"]
+        if username[0] == "@":
+            username = "@" + username
+
+        self.driver.get(f"https://www.tiktok.com/{username}")
+        self.wait_random()
+        follow_button = self.driver.find_element(By.XPATH, Dom_ids.tiktok_follow_button)
         
-        comments_button = self.test_element('//*[@id="app"]/div[2]/div[2]/div[1]/div[1]/div/div[2]/div[2]/button[2]')
-        comments_button.click()
-        #finir
+        if follow_button.text in follow_strings:  
+            follow_button.click()
+        else:
+            print(f"Can't follow {username}, statut : {follow_button.text}")
+    
+    def unfollow(self, username: str):
+        unfollow_strings = ["Abonnements"]
+        if username[0] == "@":
+            username = "@" + username
+
+        self.driver.get(f"https://www.tiktok.com/{username}")
+        self.wait_random()
+        follow_button = self.driver.find_element(By.XPATH, Dom_ids.tiktok_follow_button)
+        
+        if follow_button.text in unfollow_strings:  
+            follow_button.click()
+        else:
+            print(f"Can't unfollow {username}, statut : {follow_button.text}")
+
+        
 
 
 
 if __name__ =="__main__":
     test = TikTokControler()
     test.connect()
-    for i in range(11,33):
-        test.post(-1, i)
-        sleep(random.uniform(2400, 3000))
+    test.post(-1, 32)
+    # for i in range(32,33):
+    #     test.post(-1, i)
+    #     sleep(random.uniform(2400, 3000))
     input("press enter to close")
     # test.post(1,0)
     

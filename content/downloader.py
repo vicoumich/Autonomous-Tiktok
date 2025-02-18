@@ -27,5 +27,5 @@ def get_video(link: str, index=0) -> int:
     return index
 
 if __name__ == '__main__':
-    test = "https://youtu.be/QNOtkdX7odI"
+    test = "https://youtube.com/shorts/5wmP7YZQQtk"
     get_video(test, 1)

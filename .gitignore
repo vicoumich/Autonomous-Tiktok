@@ -1,7 +1,14 @@
 # ignore my vids
-./Videos
+./Videos/
+
+#ignorer config
+./tiktok/config.py
 
 # ignore webdriver
 /*.exe
 
 # ignore pycache
+.pyc
+
+# ignore videos
+.mp4
