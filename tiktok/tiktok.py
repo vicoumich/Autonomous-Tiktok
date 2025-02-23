@@ -2,6 +2,7 @@ import undetected_chromedriver as uc
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium_stealth import stealth
@@ -10,19 +11,31 @@ import pickle
 from time import sleep
 import inspect
 import os
-from tiktok.config import (
+
+if __name__ == "__main__":
+    from dom_ids import Dom_ids
+    from config import (
     PASSWORD,
     USERNAME,
     COOKIES
-)
-from tiktok.dom_ids import Dom_ids
+    )
+else:
+    from tiktok.dom_ids import Dom_ids
+    from tiktok.config import (
+    PASSWORD,
+    USERNAME,
+    COOKIES
+    )
 
 URL  = "https://www.tiktok.com/login"
 URL_POST = "https://www.tiktok.com/upload?lang=fr"
+CONTENT_STUDIO_URL = "https://www.tiktok.com/tiktokstudio/content"
 PATH = "C:\\Users\\vicou\Desktop\\code\\code\\TikTok\\chromedriver.exe"
 HASHTAGS = ["#tiktok", "#foryou", "#foryoupage", "#fyp", "#viral", "#humour", 
             "#trending", "#tiktokfrance", "#drole", "#funny"]
 STR_TAGS = ' '.join(HASHTAGS)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+VIDEOS_DIR = os.path.join(BASE_DIR, "Videos")
 
 def find_line():
     return inspect.currentframe().f_back.f_lineno
@@ -33,6 +46,7 @@ class TikTokControler:
         self.connected = False
         self.in_home = False
         self.in_upload = False
+        self.garabe_threshold = 20
         options = Options()
         options.page_load_strategy = "normal"
         # Keep windows open
@@ -67,8 +81,17 @@ class TikTokControler:
         print(f"\nImpossible to find the element in line {nbline}.\n")
         sleep(100000)
 
-    def wait_random(self, a=3, b=6):
-        sleep(random.uniform(a,b))
+    def wait_random(self, a=3, b=7):
+        nb_secs = random.uniform(a,b)
+        self.countdown(int(nb_secs))
+
+    def countdown(self, nb_secs:int):
+        while nb_secs:
+            m, s = divmod(nb_secs, 60)
+            min_sec_format = f"{m}:{s}"
+            print(min_sec_format, end="\r")
+            sleep(1)
+            nb_secs -= 1
 
     def _save_cookie(self):
         with open(COOKIES, 'wb') as filehandler:
@@ -111,7 +134,7 @@ class TikTokControler:
             abspath = os.path.abspath(f"../Videos/Vid{index}/Part_{index_part}.mp4") 
             ######################
         else:
-            abspath = os.path.abspath(f"../Videos/Vid{index}/test.mp4")
+            abspath = os.path.join(os.path.join(VIDEOS_DIR, f"Video{index}"), "test.mp4")
         ######
         upload_button.send_keys(abspath)
         print(f"\nkey sended, path : {abspath}\n")
@@ -204,6 +227,9 @@ class TikTokControler:
         print("\n Connected. \n")
   
     def follow(self, username: str):
+        if not self.connected:
+            self.connect()
+            self.wait_random()
         follow_strings = ["Suivre", "Follow"]
         if username[0] == "@":
             username = "@" + username
@@ -218,6 +244,9 @@ class TikTokControler:
             print(f"Can't follow {username}, statut : {follow_button.text}")
     
     def unfollow(self, username: str):
+        if not self.connected:
+            self.connect()
+            self.wait_random()
         unfollow_strings = ["Abonnements"]
         if username[0] == "@":
             username = "@" + username
@@ -231,6 +260,49 @@ class TikTokControler:
         else:
             print(f"Can't unfollow {username}, statut : {follow_button.text}")
 
+    def delete_video(self, video:WebElement):
+        if not(self.connected):
+            self.connect()
+            self.wait_random()
+        try:
+            video_action_button = video.find_element(By.XPATH, Dom_ids.tiktok_option_button)
+            video_action_button.click()
+            self.wait_random()
+            delete_button = self.driver.find_element(By.XPATH, Dom_ids.tiktok_delete_button)
+            delete_button.click()
+        except Exception as e:
+            print(f"Error deleting video: {e}")        
+
+    def collect_garbage(self):
+        if not self.connected:
+            self.connect()
+            self.wait_random()
+        # self.driver.switch_to.frame(0)
+        self.wait_random()
+        self.driver.get(CONTENT_STUDIO_URL)
+        self.wait_random()
+
+        # Select videos in tiktok studio
+        videos = self.driver.find_elements(By.XPATH, Dom_ids.tiktok_studio_contents)
+        garbages = []
+
+        # Identifying garbage (views under threshold)
+        for video in videos:
+            try:
+                span = video.find_element(By.XPATH, Dom_ids.tiktok_studio_contents_views)
+                try:
+                    nb_views = span.text.strip()
+                    nb_views = int(span.text.strip())
+                    if nb_views < self.garabe_threshold:
+                        garbages.append(video)
+                except Exception as e:
+                    print(f'{nb_views} cant be converted in int but, it will not be deleted Error: {e}')
+
+            except Exception as e:
+                print(f"Erreur lors du traitement d'une div : {e}")
+        for garbage in garbages:
+            self.delete_video(garbage)
+
         
 
 
@@ -238,10 +310,22 @@ class TikTokControler:
 if __name__ =="__main__":
     test = TikTokControler()
     test.connect()
-    test.post(-1, 32)
-    # for i in range(32,33):
-    #     test.post(-1, i)
-    #     sleep(random.uniform(2400, 3000))
+    # try:
+    #     test.collect_garbage()
+    # except Exception as e:
+    #     print(f"\n\n\n Erreur : {e}")
+    # test.wait_random(10,15)
+    # print("sleeping before")
+    
+    # test.collect_garbage()
+    # test.post(-1, 7)
+    # test.wait_random(2400, 3000)
+
+    for i in range(3,22):
+        test.post(-1, i)
+        test.wait_random(600, 660)
+        if i%4==0:
+            test.collect_garbage()
     input("press enter to close")
     # test.post(1,0)
     
