@@ -37,7 +37,7 @@ class YoutubeScraper:
             for a_tag in soup.find_all("a", class_="shortsLockupViewModelHostEndpoint reel-item-endpoint"):
                 href = a_tag.get("href")
                 if href:
-                    links.append(href)
+                    links.append(f"https://youtube.com{href}")
             return links
         except Exception as e:
             print(f"Error while trying to find videos in html: {e}")
@@ -65,7 +65,7 @@ class YoutubeScraper:
 
 # Exemple d'utilisation
 if __name__ == "__main__":
-    username = "username"  # Remplace par un nom d'utilisateur valide
+    username = "@b3nthy"  # Remplace par un nom d'utilisateur valide
     scraper = YoutubeScraper(username)
     html_content = scraper.get_youtube_shorts_html()
     if html_content:
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     scraper.save_links_to_file(shorts_links)
 
     # Exemple de lecture d'un fichier d'usernames
-    file_path = "channels.txt"
-    usernames = scraper.get_usernames_from_file(file_path)
-    print(usernames)
+    # file_path = "channels.txt"
+    # usernames = scraper.get_usernames_from_file(file_path)
+    # print(usernames)
     

@@ -6,13 +6,15 @@ from threading import Thread
 HASHTAGS = ["#tiktok", "#foryou", "#foryoupage", "#fyp", "#viral", "#tiktokindia", 
             "#trending", "#tiktokfrance", "#comedy", "#funny"]
 STR_TAGS = ' '.join(HASHTAGS)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+VIDEOS_DIR = os.path.join(BASE_DIR, "Videos")
 
 def make_part_thread(source, targ, start, end, index):
     part = VideoFileClip(source).subclipped(start, end)
     text = TextClip(text = f"Part{index}", 
-                     font_size=60, color="black",
-                     bg_color="white", 
-                     font="./font/Arial.ttf").with_duration(4).with_position("center")
+                     font_size=60, color="white",
+                    #  bg_color="white", 
+                     font="./font/FontsFree-Net-Proxima-Nova-Sbold.otf").with_duration(4).with_position("center")
                      
     part = CompositeVideoClip([part, text])
     text.close()
@@ -30,9 +32,9 @@ def video_cutter(videoindex: int, start: int|float, end: int|float, nbpart: int)
     part_time = (end - start) // nbpart
     start2 = start
     end2 = start2 + part_time
-    source = f"../Videos/Vid{videoindex}/test.mp4"
+    source = os.path.join(os.path.join(VIDEOS_DIR, f"Video{videoindex}"), "test.mp4")
 
-    targ = f"../Videos/Vid{videoindex}/Part_{index_part}.mp4"
+    targ = os.path.join(os.path.join(VIDEOS_DIR, f"Video{videoindex}"), f"Part{index_part}.mp4")
 
     # If the video is already cut
     if os.path.isfile(targ):
@@ -59,7 +61,7 @@ def video_cutter(videoindex: int, start: int|float, end: int|float, nbpart: int)
 
 def clean_parts(videoindex):
     index = 1
-    targ = f"Videos/Vid{videoindex}/Part{index}.mp4"
+    targ = f"../Videos/Vid{videoindex}/Part{index}.mp4"
     while os.path.isfile(targ):
         os.remove(targ)
         index += 1
