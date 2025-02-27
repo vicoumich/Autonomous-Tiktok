@@ -42,11 +42,14 @@ def find_line():
 
 class TikTokControler:
 
-    def __init__(self) -> None:
+    def __init__(self, username=None, email=None, password=None) -> None:
         self.connected = False
         self.in_home = False
         self.in_upload = False
         self.garabe_threshold = 20
+        self._username = username
+        self.email = email if password != None else None
+        self.password = password if email != None else None
         options = Options()
         options.page_load_strategy = "normal"
         # Keep windows open
@@ -64,6 +67,12 @@ class TikTokControler:
         self.driver.maximize_window()
         self.driver.get(URL)
 
+    def set_username(self, username):
+        self._username = username
+
+    def get_username(self):
+        return self._username
+    
     def test_element(self, xpath:str, nbline:int):
         """
             Return the element search faster
@@ -81,7 +90,7 @@ class TikTokControler:
         print(f"\nImpossible to find the element in line {nbline}.\n")
         sleep(100000)
 
-    def wait_random(self, a=3, b=7):
+    def wait_random(self, a=7, b=10):
         nb_secs = random.uniform(a,b)
         self.countdown(int(nb_secs))
 
@@ -189,8 +198,14 @@ class TikTokControler:
         print("Proceeding with login via email and password...")
         
     def connect(self):            
-        # CLIQUER SUR LES COOKIE, IMPOSSIBLE A AUTOMATISER
-        
+        # to login with self attributes or config.py
+        if (not self.password) or (not self.email):
+            print("Loging in with config.py ids")
+            self.email = USERNAME
+            self.password = PASSWORD
+        else:
+            print(f"\nLoging in with object attributes {self.email}")
+
         self.wait_random()
         # Get out the cookie Shadow DOM
         self.driver.execute_script(Dom_ids.accept_cookies_button).click()
@@ -321,11 +336,11 @@ if __name__ =="__main__":
     # test.post(-1, 7)
     # test.wait_random(2400, 3000)
 
-    for i in range(3,22):
+    for i in range(20,22):
         test.post(-1, i)
-        test.wait_random(600, 660)
-        if i%4==0:
-            test.collect_garbage()
+        test.wait_random(2400, 3000)
+        # if i%4==0:
+        #     test.collect_garbage()
     input("press enter to close")
     # test.post(1,0)
     
