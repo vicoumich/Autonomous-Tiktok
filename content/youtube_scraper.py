@@ -5,9 +5,9 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 
 class YoutubeScraper:
-    def __init__(self, username):
-        self.username = username
-        self.base_url = f"https://www.youtube.com/{username}/shorts"
+    def __init__(self, username: str):
+        self.username = username if username[0] == "@" else "@" + username
+        self.base_url = f"https://www.youtube.com/{self.username}/shorts"
         self.driver = uc.Chrome()
     
     def get_youtube_shorts_html(self):
